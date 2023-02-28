@@ -6,6 +6,10 @@ import {
   
   serve({
     "/quotes": handleQuotes,
+    "/": (request, connInfo, params) => {
+        const post = `Hello, you visited ${params.slug}!`;
+        return new Response(post);
+      },
   });
   
   async function handleQuotes(request: Request) {
