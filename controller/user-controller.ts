@@ -41,5 +41,4 @@ async function getCurrentUser(request: Request) {
     } = data as { allDiarys: { data: string[] } };
 
     return json({ diarys });
-    }
 }
