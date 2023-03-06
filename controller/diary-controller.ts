@@ -1,7 +1,7 @@
 import {
     json,
     validateRequest,
-} from "https://deno.land/x/sift@0.6.0/mod";
+} from "https://deno.land/x/sift@0.6.0/mod.ts";
 import { queryFauna, FaunaError } from "../query.ts";
 
 export const DiaryRoute = {

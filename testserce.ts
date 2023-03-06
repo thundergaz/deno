@@ -3,7 +3,7 @@ import {
     serve,
     validateRequest,
   } from "https://deno.land/x/sift@0.6.0/mod.ts";
-import { queryFauna, FaunaError } from "./query";
+import { queryFauna, FaunaError } from "./query.ts";
   
   serve({
     "/quotes": handleQuotes,
