@@ -6,6 +6,7 @@ import { queryFauna, FaunaError } from "../query.ts";
 
 export const DiaryRoute = {
     '/diary/getReport': getDiaryByUser,
+    '/diary/getReporTemp': getDiaryByUser,
 }
 
 // 获取用户的笔记
