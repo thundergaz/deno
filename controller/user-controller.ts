@@ -25,7 +25,10 @@ async function getCurrentUser(request: Request) {
         allUsers {
           data {
             name
-            id
+            code
+            activeDevice
+            code
+            deviceList
           }
         }
       }
@@ -38,8 +41,9 @@ async function getCurrentUser(request: Request) {
     }
 
     const {
-        allDiarys: { data: diarys },
-    } = data as { allDiarys: { data: string[] } };
+        // 这里要对应 schema 的 query-key.
+        allUsers: { data: users },
+    } = data as { allUsers: { data: string[] } };
 
-    return json({ diarys });
+    return json({ users });
 }
