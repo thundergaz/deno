@@ -1,2 +1,2 @@
-export * from './diary-controller';
-export * from './user-controller';
+export * from './diary-controller.ts';
+export * from './user-controller.ts';
