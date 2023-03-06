@@ -1,9 +1,8 @@
 import {
     json,
-    serve,
     validateRequest,
 } from "https://deno.land/x/sift@0.6.0/mod";
-import { queryFauna, FaunaError } from "../query";
+import { queryFauna, FaunaError } from "../query.ts";
 
 export const DiaryRoute = {
     '/diary/getReport': getDiaryByUser,

@@ -2,7 +2,7 @@ import {
     json,
     validateRequest,
 } from "https://deno.land/x/sift@0.6.0/mod";
-import { queryFauna } from "../query";
+import { queryFauna } from "../query.ts";
 
 export const UserRoute = {
     '/user/find/:user': getCurrentUser,
