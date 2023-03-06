@@ -1,0 +1,124 @@
+type User {
+    id: String,
+    # 名称
+    name: String! @search,
+    # 状态
+    status: String,
+    # 工号（唯一标识）
+    code: String,
+    # 个人成本
+    value: String,
+    # 设备列表
+    deviceList: [String],
+    # 激活设备
+    activeDevice: [String],
+    # 工作角色
+    work: String,
+    isDelete: Boolean,
+}
+
+type Diary {
+    # 日报时间
+    date: String,
+    currentTaskId: String,
+    id: String,
+    resLevel: String,
+    score: String,
+    status: String,
+    workTime: String,
+    authorId: String,
+    # 描述
+    content: String,
+    workList: [String],
+    # 所属项目
+    projectId: String,
+    isDelete: Boolean,
+}
+
+type Project {
+    id: String,
+    # 项目名称
+    name: String,
+    # 项目状态
+    status: String,
+    # 开始时间
+    startTime: String,
+    # 结束时间
+    endTime: String,
+    # 里程碑
+    stories: String,
+    # 功能列表
+    classList: String,
+    # 成本
+    cost: String,
+    # 描述
+    description: String,
+    # 更新记录
+    updateTimestamp: String,
+    # 项目当前的完成率
+    finish: String,
+    # 项目成员信息
+    memberList: [String],
+    # 项目配置信息
+    extraInfo: String,
+    isDelete: Boolean,
+}
+
+type Task {
+    id: String,
+    # 任务名称
+    name: String,
+    # 状态
+    status: String,
+    # 负责人id
+    authorId: String,
+    # 所属项目信息
+    projectId: String,
+    # 需求链接
+    url: String,
+    # 描述
+    description: String,
+    # 需求类型
+    requirementType: String,
+    # 需求分类
+    requirementClass: String,
+    # 需求内容类型
+    requirementContentType: String,
+    # 技术文档
+    techDoc: String,
+    sortIndex: String,
+    # 占用时间
+    costDay: String,
+    # 实际开始时间
+    actualStart: String,
+    # 任务级别
+    level: String,
+    # 父级需求
+    parentId: String,
+    # 实际结束时间
+    actualEnd: String,
+    # 进度
+    progress: String,
+    isDelete: Boolean,
+    # 计划开始时间
+    startDate: String,
+    # 计划结束时间
+    endDate: String,
+    # 评审人需求提出人
+    starter: String
+}
+
+type Query {
+    # 查询用户列表
+    allUsers: [User!],
+    # 查看用户信息
+    userById(id: String): User!,
+    # 查询当前用户
+    currentUser(activeDevice: String): User!,
+    allDiarys: [Diary!],
+    getDiaryByUser(authorId: String):Diary!
+    allProjects: [Project!],
+    project: Project!,
+    allTasks: [Task!],
+    task: Task,
+}

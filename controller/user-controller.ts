@@ -9,6 +9,7 @@ export const UserRoute = {
 }
 
 async function getCurrentUser(request: Request) {
+    console.log(request);
 
     // 这里为api的请求规则，请求方式以及请求体，不符合规则会报错。
     const { error, body } = await validateRequest(request, {

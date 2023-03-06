@@ -8,6 +8,4 @@ Object.values(route).forEach(element => {
   router = { ...router, ...element }
 });
 
-console.log(router);
-
 serve(router);
