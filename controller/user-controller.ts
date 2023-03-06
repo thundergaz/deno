@@ -21,10 +21,10 @@ async function getCurrentUser(request: Request) {
 
     const query = `
       query {
-        allDiarys {
+        allUsers {
           data {
-            quote
-            author
+            name
+            id
           }
         }
       }
