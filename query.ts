@@ -1,7 +1,7 @@
-
-type FaunaError = {
+export type FaunaError = {
     message: string;
 };
+
 /** Query FaunaDB GraphQL endpoint with the provided query and variables. */
 export async function queryFauna(
     query: string,

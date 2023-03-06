@@ -3,7 +3,7 @@ import {
     serve,
     validateRequest,
   } from "https://deno.land/x/sift@0.6.0/mod.ts";
-import { queryFauna } from "./query";
+import { queryFauna, FaunaError } from "./query";
   
   serve({
     "/quotes": handleQuotes,
@@ -13,22 +13,21 @@ import { queryFauna } from "./query";
       },
   });
   
+  
   async function handleQuotes(request: Request) {
-    // We allow GET requests and POST requests with the
-    // following fields (quite, author) in the body.
+
     const { error, body } = await validateRequest(request, {
       GET: {},
       POST: {
         body: ["quote", "author"],
       },
     });
-    // validateRequest populates the error if the request doesn't meet
-    // the schema we defined.
+    // 验证请求体是否符合 要求
     if (error) {
       return json({ error: error.message }, { status: error.status });
     }
   
-    // Handle POST requests.
+    // 拦截Post请求
     if (request.method === "POST") {
       const { quote, author, errors } = await createQuote(
         body as { quote: string; author: string },
@@ -41,7 +40,7 @@ import { queryFauna } from "./query";
       return json({ quote, author }, { status: 201 });
     }
   
-    // Handle GET requests.
+    // 拦截get请求
     {
       const { quotes, errors } = await getAllQuotes();
       if (errors) {
@@ -53,7 +52,7 @@ import { queryFauna } from "./query";
     }
   }
   
-  /** Get all quotes available in the database. */
+  /** 获取所有元素 分页 */
   async function getAllQuotes() {
     const query = `
       query {
@@ -78,7 +77,7 @@ import { queryFauna } from "./query";
     return { quotes };
   }
   
-  /** Create a new quote in the database. */
+  /** 创建一个新的无素 */
   async function createQuote({
     quote,
     author,
