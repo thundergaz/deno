@@ -3,8 +3,8 @@ import {
   validateRequest,
 } from "https://deno.land/x/sift@0.6.0/mod.ts";
 import { queryFauna } from "../query.ts";
-import * as jwt from "npm:jsonwebtoken";
-import * as lodash from "npm:lodash";
+import * as jwt from "npm:jsonwebtoken@^8.5.1";
+import * as lodash from "npm:lodash@^4.17.21";
 
 export const UserRoute = {
   '/user/find/:user': getCurrentUser,
