@@ -1,0 +1,16 @@
+{
+    "name": "bigback",
+    "version": "0.0.1",
+    "description": "api mock server",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "sturat",
+    "license": "ISC",
+    "repository": "bigApi",
+    "dependencies": {
+        "jsonwebtoken": "^8.5.1",
+        "lodash": "^4.17.21",
+    }
+}
