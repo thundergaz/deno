@@ -8,7 +8,7 @@ import lodash from "npm:lodash@^4.17.21";
 
 export const UserRoute = {
   '/user/find/:user': getCurrentUser,
-  '/user/getAll': getAllUser,
+  // '/user/getAll': getAllUser,
   // '/user/:id': getUserById,
   // '/user/delete/:id': removeUserById,
   // '/user/report/:id': updateReport,
