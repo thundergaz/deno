@@ -3,8 +3,8 @@ import {
   validateRequest,
 } from "https://deno.land/x/sift@0.6.0/mod.ts";
 import { queryFauna } from "../query.ts";
-import jwt from "npm:jsonwebtoken@^8.5.1";
-import lodash from "npm:lodash@^4.17.21";
+import { create, getNumericDate } from "https://deno.land/x/djwt@$VERSION/mod.ts";
+import lodash from "https://deno.land/x/lodash@4.17.19/lodash.js";
 
 export const UserRoute = {
   '/user/find/:user': getCurrentUser,
@@ -16,16 +16,21 @@ export const UserRoute = {
   // 'POST /user/upload': uploadList,
   // 'POST /user/sync': syncData,
 }
+const signKey = await crypto.subtle.generateKey(
+  { name: "THUNDERGAZ", hash: "SHA-512" },
+  true,
+  ["sign", "verify"],
+);
+// 过期时间
+const nbf = getNumericDate(60 * 60 * 7);
 // token签名
-const buildToken = (info, key, expiresIn) => {
+const buildToken = (info) => {
   return new Promise((resolve, reject) => {
-      jwt.sign(info, key, { expiresIn }, (err, token) => {
-          if (err) {
-              reject(err)
-          } else {
-              resolve("Bearer " + token);
-          }
-      })
+    // token中加密的数据
+    const signInData = { ...info, exp: nbf };
+    create({ alg: "HS512", typ: "JWT" }, signInData, signKey).then( token => {
+      resolve(token);
+    });
   })
 }
 // 查看当前用户
@@ -83,7 +88,7 @@ async function getCurrentUser(request: Request) {
   const tokenInfo = lodash.pick(res, ['id', 'name', 'work'])
   const resBody = {
       info: tokenInfo,
-      token: await buildToken({ ...tokenInfo }, 'thundergaz', 3600 * 24 * 7),
+      token: await buildToken({ ...tokenInfo }),
   };
   return json({ resBody });
 }
