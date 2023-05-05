@@ -3,8 +3,8 @@ import {
   validateRequest,
 } from "https://deno.land/x/sift@0.6.0/mod.ts";
 import { queryFauna } from "../query.ts";
-import { create, getNumericDate } from "https://deno.land/x/djwt@$VERSION/mod.ts";
-import lodash from "https://deno.land/x/lodash@4.17.19/lodash.js";
+import { create, getNumericDate } from "https://deno.land/x/djwt@v2.8/mod.ts";
+import * as lodash from "https://deno.land/x/lodash@4.17.19/lodash.js";
 
 export const UserRoute = {
   '/user/find/:user': getCurrentUser,
