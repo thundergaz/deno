@@ -1,7 +1,7 @@
 import { getNumericDate, create, verify, dotenvConfig } from "../deps.ts";
 import type { Payload, Header } from "../deps.ts";
 import { convertToCryptoKey } from "./convertCryptoKey.ts";
-dotenvConfig({ export: true, path: ".env", safe: true });
+// dotenvConfig({ export: true, path: ".env", safe: true });
 
 export const signJwt = async ({
   user_id,
