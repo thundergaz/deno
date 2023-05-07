@@ -8,7 +8,7 @@ import * as lodash from "https://deno.land/x/lodash@4.17.19/lodash.js";
 
 export const UserRoute = {
   '/user/find/:user': getCurrentUser,
-  // '/user/getAll': getAllUser,
+  '/user/getAll': getAllUser,
   // '/user/:id': getUserById,
   // '/user/delete/:id': removeUserById,
   // '/user/report/:id': updateReport,
@@ -16,7 +16,7 @@ export const UserRoute = {
   // 'POST /user/upload': uploadList,
   // 'POST /user/sync': syncData,
 }
-const signKey = await crypto.subtle.generateKey(
+const signKey: CryptoKeyPair = await crypto.subtle.generateKey(
   { name: "THUNDERGAZ", hash: "SHA-512" },
   true,
   ["sign", "verify"],
