@@ -2,9 +2,7 @@ import type { RouterContext } from "../deps.ts";
 import { client, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
-  const qBody = await request.body().value;
-  console.log(qBody);
-  const { reason, score, date } = qBody;
+  const { reason, score, date } = await request.body().value;
   const result = await client
   .query(
     query.Create(query.Collection("rbyt"), {

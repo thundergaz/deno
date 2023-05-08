@@ -1,4 +1,4 @@
-import { Application, Router, logger } from "./deps.ts";
+import { Application, Router, logger, oakCors } from "./deps.ts";
 import type { RouterContext } from "./deps.ts";
 import appRouter from "./routes/index.ts";
 
@@ -8,6 +8,8 @@ const router = new Router();
 // Middleware Logger
 app.use(logger.default.logger);
 app.use(logger.default.responseTime);
+
+app.use(oakCors());
 
 // Health checker
 router.get<string>("/api/healthchecker", (ctx: RouterContext<string>) => {
