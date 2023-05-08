@@ -2,15 +2,13 @@ import type { RouterContext } from "../deps.ts";
 import { client, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
-  const { reason, score, date } = await request.body().value;
+  const { item, date } = await request.body().value;
   const result = await client
   .query(
     query.Create(query.Collection("rbyt"), {
       data: {
-        // 加分的原因：
-        reason,
-        // 增加的分值
-        score,
+        // 加分项
+        item,
         // 加分的时间
         date
       }
