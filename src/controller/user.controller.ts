@@ -21,14 +21,27 @@ const getMeController = ({ state, response }: RouterContext<string>) => {
   }
 };
 
-const testController = async ({ state, response }: RouterContext<string>) => {
+const userListController = async ({ state, response }: RouterContext<string>) => {
   const result = await client
   .query(
-    query.Create(query.Collection("Project"), {
-      data: {
-        name: 'ttttt22233',
-      },
-    })
+    // query.Paginate(query.Match(query.Index("allUsers"))) 这样回来的是一个引用的数据，没有具体信息
+    query.Map(
+      query.Paginate(query.Match(query.Index("allUsers"))),
+      query.Lambda('userRef', 
+        //query.Get(query.Var('pilotRef')), 这样虽然有数据，但是会把 数据 引用 ts 一起返回 结构比较乱
+        query.Let(
+          {
+            shipDoc: query.Get(query.Var("userRef"))
+          },
+          {
+            id: query.Select(["ref", "id"], query.Var("shipDoc")),
+            name: query.Select(["data", "name"], query.Var("shipDoc")),
+            position: query.Select(["data", "code"], query.Var("shipDoc")),
+            activeDevice: query.Select(["data", "activeDevice"], query.Var("shipDoc")),
+          }
+        )
+      )
+    )
   )
   .then((ret) => {
     return {
@@ -50,4 +63,4 @@ const testController = async ({ state, response }: RouterContext<string>) => {
   response.body = result;
 };
 
-export default { getMeController, testController };
+export default { getMeController, userListController };
