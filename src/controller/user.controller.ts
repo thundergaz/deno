@@ -45,13 +45,13 @@ const userListController = async ({ state, response }: RouterContext<string>) =>
   )
   .then((ret) => {
     return {
-      data: ret,
+      ...ret,
       success: true
     }
   })
   .catch((err) => {
     return {
-      error: err,
+      ...err,
       success: true
     }
   });

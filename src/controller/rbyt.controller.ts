@@ -19,13 +19,13 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
   )
   .then((ret) => {
     return {
-      data: ret,
+      ...ret,
       success: true
     }
   })
   .catch((err) => {
     return {
-      error: err,
+      ...err,
       success: false
     }
   });
@@ -59,13 +59,13 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
   )
   .then((ret) => {
     return {
-      data: ret,
+      ...ret,
       success: true
     }
   })
   .catch((err) => {
     return {
-      error: err,
+      ...err,
       success: false
     }
   });
