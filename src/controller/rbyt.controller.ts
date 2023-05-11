@@ -1,4 +1,4 @@
-import type { RouterContext } from "../deps.ts";
+import { RouterContext, helpers } from "../deps.ts";
 import { client, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
@@ -74,8 +74,9 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
   response.body = result;
 };
 
-const getContentController = async ({ state, response }: RouterContext<string>) => {
-  const searchDate = state.date;
+const getContentController = async ({ state, request, response }: RouterContext<string>) => {
+  const queryData = helpers.getQuery({ request })
+  const searchDate = queryData.date;
   const result = await client
     .query(
       query.Map(
@@ -89,7 +90,16 @@ const getContentController = async ({ state, response }: RouterContext<string>) 
             )
           )
         ),
-        query.Lambda("planetRef", query.Get(query.Var("planetRef")))
+        query.Lambda("scoreRef", query.Let(
+          {
+            shipDoc: query.Get(query.Var("scoreRef"))
+          },
+          {
+            id: query.Select(["ref", "id"], query.Var("shipDoc")),
+            item: query.Select(["data", "item"], query.Var("shipDoc")),
+            date: query.Select(["data", "date"], query.Var("shipDoc")),
+          }
+        ))
       )
     )
     .then((ret) => {
