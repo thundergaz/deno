@@ -1,6 +1,6 @@
 import type { RouterContext } from "../deps.ts";
 import { users } from "./auth.controller.ts";
-import { client, query } from "../database/db.ts";
+import { queryResult, query } from "../database/db.ts";
 
 const getMeController = ({ state, response }: RouterContext<string>) => {
   try {
@@ -20,15 +20,12 @@ const getMeController = ({ state, response }: RouterContext<string>) => {
     return;
   }
 };
-
+// 获取用户列表
 const userListController = async ({ state, response }: RouterContext<string>) => {
-  const result = await client
-  .query(
-    // query.Paginate(query.Match(query.Index("allUsers"))) 这样回来的是一个引用的数据，没有具体信息
+  const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("allUsers"))),
-      query.Lambda('userRef', 
-        //query.Get(query.Var('pilotRef')), 这样虽然有数据，但是会把 数据 引用 ts 一起返回 结构比较乱
+      query.Lambda('userRef',
         query.Let(
           {
             shipDoc: query.Get(query.Var("userRef"))
@@ -42,24 +39,8 @@ const userListController = async ({ state, response }: RouterContext<string>) =>
         )
       )
     )
-  )
-  .then((ret) => {
-    return {
-      ...ret,
-      success: true
-    }
-  })
-  .catch((err) => {
-    return {
-      ...err,
-      success: true
-    }
-  });
-  if (result.success) {
-    response.status = 200;
-  } else {
-    response.status = 500;
-  }
+  );
+  response.status = result.success ? 200 : 500;
   response.body = result;
 };
 

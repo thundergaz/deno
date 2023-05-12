@@ -12,4 +12,19 @@ var client = new Client.Client({
   // Adjust the endpoint if you are using Region Groups
   endpoint: "https://db.fauna.com/",
 });
-export { client, query };
+
+const queryResult = async (cb) => await client
+.query(cb)
+.then((ret) => {
+  return {
+    ...ret,
+    success: true
+  }
+})
+.catch((err) => {
+  return {
+    ...err,
+    success: false
+  }
+});
+export { queryResult, client, query };
