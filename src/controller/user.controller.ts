@@ -2,6 +2,7 @@ import type { RouterContext } from "../deps.ts";
 import { users } from "./auth.controller.ts";
 import { queryResult, query } from "../database/db.ts";
 
+// 获取当前用户
 const getMeController = ({ state, response }: RouterContext<string>) => {
   try {
     const user = users.find((user) => user.id === state.user_id);
