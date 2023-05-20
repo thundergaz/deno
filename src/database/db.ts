@@ -12,19 +12,71 @@ var client = new Client.Client({
   // Adjust the endpoint if you are using Region Groups
   endpoint: "https://db.fauna.com/",
 });
+// 查看初始化的配置是否完整，没有就需要重新创建
+const initList = [
+  // 博客表检查
+  {
+    type: 'Collection',
+    name: 'blog',
+    action: () => query.CreateCollection({name: "blog"})
+  },
+  // blog的索引
+  {
+    type: 'Index',
+    name: 'blog_list',
+    action: () => query.CreateIndex({
+        name: "blog_list",
+        source: query.Collection("blog"),
+        values: [
+          { field: ["ref"] }
+        ]
+      })
+  },
+  {
+    type: 'Collection',
+    name: 'rbyt',
+    action: () => query.CreateCollection({name: "rbyt"})
+  },
+  // 创建rbyt的索引
+  {
+    type: 'Index',
+    name: 'rbyt_all_score',
+    action: () => query.CreateIndex({
+        name: "rbyt_all_score",
+        source: query.Collection("rbyt"),
+        values: [
+          { field: ["ref"] }
+        ]
+      })
+  },
+]
 
-const queryResult = async (cb) => await client
-.query(cb)
-.then((ret) => {
-  return {
-    ...ret,
-    success: true
-  }
-})
-.catch((err) => {
-  return {
-    ...err,
-    success: false
-  }
-});
+const queryResult = async (type, name, cb) => {
+  const targetAction = initList.filter( item => item.name === name && item.type === type)[0];
+  console.log(targetAction);
+  return await client
+    // .query(query.If(query.Exists(query[targetAction.type](targetAction.name)), cb, targetAction.action()))
+    .query(
+      query.If(
+        query.Exists(
+          query[targetAction.type](targetAction.name)
+        ),
+        cb,
+        targetAction.action()
+      )
+    )
+    .then((ret) => {
+      console.log(ret);
+      return {
+        ...ret,
+        success: true
+      }
+    })
+    .catch((err) => {
+      return {
+        ...err,
+        success: false
+      }
+    })
+};
 export { queryResult, client, query };

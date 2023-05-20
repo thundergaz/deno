@@ -469,3 +469,7 @@ Map(
 }
 ```
 https://fauna.com/blog/getting-started-with-fql-faunadbs-native-query-language-part-2#filtering-results
+
+Paginate(Collections()) 获取所有表
+Paginate(Indexes()) 所有索引
+Paginate(Databases()) 所有库
