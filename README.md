@@ -473,3 +473,54 @@ https://fauna.com/blog/getting-started-with-fql-faunadbs-native-query-language-p
 Paginate(Collections()) 获取所有表
 Paginate(Indexes()) 所有索引
 Paginate(Databases()) 所有库
+## 时间范围过滤
+````
+> CreateIndex({
+  name: "all_Teleporations_by_ts_range",
+  source: Collection("Teleportations"),
+  values: [
+    { field: ["data", "ts"]},
+    { field: "ref"}
+  ]
+})
+
+> Paginate(
+  Range(
+    Match(Index("all_Teleporations_by_ts_range")),
+    Now(),
+    TimeAdd(Now(), 100, "days")
+  )
+)
+{
+  data: [
+    [
+      Time("2020-08-19T12:56:31.102631Z"),
+      Ref(Collection("Teleportations"), "274138599280083456")
+    ],
+    [
+      Time("2020-08-28T09:56:34.304009Z"),
+      Ref(Collection("Teleportations"), "274157476972069395")
+    ]
+  ]
+}
+
+> Paginate(
+  Range(
+    Match(Index("all_Teleporations_by_ts_range")),
+    ToTime(Date("2020-01-01")),
+    ToTime(Date("2021-01-01"))
+  )
+)
+{
+  data: [
+    [
+      Time("2020-08-19T12:56:31.102631Z"),
+      Ref(Collection("Teleportations"), "274138599280083456")
+    ],
+    [
+      Time("2020-08-28T09:56:34.304009Z"),
+      Ref(Collection("Teleportations"), "274157476972069395")
+    ]
+  ]
+}
+````

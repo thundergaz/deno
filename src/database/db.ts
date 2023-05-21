@@ -53,7 +53,6 @@ const initList = [
 
 const queryResult = async (type, name, cb) => {
   const targetAction = initList.filter( item => item.name === name && item.type === type)[0];
-  console.log(targetAction);
   return await client
     // .query(query.If(query.Exists(query[targetAction.type](targetAction.name)), cb, targetAction.action()))
     .query(
@@ -66,7 +65,6 @@ const queryResult = async (type, name, cb) => {
       )
     )
     .then((ret) => {
-      console.log(ret);
       return {
         ...ret,
         success: true

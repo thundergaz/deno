@@ -2,45 +2,36 @@ import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
 
 const createBlogController = async ({ request, response }: RouterContext<string>) => {
-  // 文章内容
-  // # 标题
-  // title
-  // # 分类
-  // category
-  // 标签
-  // tags
-  // # 创建日期
-  // createdAt
-  // # 更新日期
-  // updatedAt
-  // # 内容
-  // content
-  // # 阅读次数
-  // viewTimes
-  // # 评论数
-  // comment
-  const { title, category, tags, content, createdAt, id } = await request.body().value;
-  const result = await queryResult( 'Collection', 'blog',
-    !id ? (
-      query.Create(query.Collection("blog"), {
-        data: {
-          title, category, content, tags,
-          createdAt: new Date().toLocaleTimeString()
+  // 文章内容 # 标题 title # 分类 category 标签 tags # 创建日期 createdAt # 更新日期 updatedAt # 内容 content # 阅读次数 viewTimes # 评论数 comment
+  const { title, category, tags, content, createdAt, id, description, } = await request.body().value;
+  if ( title && category && tags && content && createdAt && description) {
+    const result = await queryResult( 'Collection', 'blog',
+      !id ? (
+        query.Create(query.Collection("blog"), {
+          data: {
+            title, category, description ,content, tags,
+            createdAt: new Date().toLocaleString(),
+            updatedAt: new Date().toLocaleString(),
+          }
         }
-      }
+        )
+      ) : (
+        query.Update(query.Ref(query.Collection("blog"), id), {
+          data: {
+            title, category, content, tags,
+            createdAt,
+            updatedAt: new Date().toLocaleString()
+          }
+        })
       )
-    ) : (
-      query.Update(query.Ref(query.Collection("blog"), id), {
-        data: {
-          title, category, content, tags,
-          createdAt,
-          updatedAt: new Date().toLocaleTimeString()
-        }
-      })
-    )
-  );
-  response.status = result.success ? 200 : 500;
-  response.body = result;
+    );
+    response.status = result.success ? 200 : 500;
+    response.body = result;
+  } else {
+    response.status = 500;
+    response.body = '必要的数据未填';
+  }
+
 };
 
 const blogListController = async ({ state, response }: RouterContext<string>) => {
@@ -60,6 +51,8 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
             content: query.Select(["data", "content"], query.Var("shipDoc")),
             createdAt: query.Select(["data", "createdAt"], query.Var("shipDoc")),
             updatedAt: query.Select(["data", "updatedAt"], query.Var("shipDoc")),
+            // 评论
+            // comment: 
           }
         )
       )
