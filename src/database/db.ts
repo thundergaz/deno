@@ -28,6 +28,7 @@ const initList = [
         name: "blog_list",
         source: query.Collection("blog"),
         values: [
+          { field: ["data", "ncreatedAtme"], reverse: true},
           { field: ["ref"] }
         ]
       })

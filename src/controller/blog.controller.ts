@@ -40,7 +40,7 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
   const result = await queryResult( 'Index', 'blog_list',
     query.Map(
       query.Paginate(query.Match(query.Index("blog_list"))),
-      query.Lambda('blogRef',
+      query.Lambda(['time', 'blogRef'],
         query.Let(
           {
             shipDoc: query.Get(query.Var("blogRef"))
@@ -53,8 +53,6 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
             description: query.Select(["data", "description"], query.Var("shipDoc")),
             createdAt: query.Select(["data", "createdAt"], query.Var("shipDoc")),
             updatedAt: query.Select(["data", "updatedAt"], query.Var("shipDoc")),
-            // 评论
-            // comment: 
           }
         )
       )
