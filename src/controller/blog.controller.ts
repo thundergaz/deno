@@ -66,7 +66,7 @@ const detailContentController = async ({ state, request, response }: RouterConte
   const queryData = helpers.getQuery({ request })
   const articleId = queryData.id;
   const result = await queryResult('Collection','blog',
-    query.Let({ doc: query.Get(query.Ref(query.Collection("blog"), articleId)) }, query.Select(['data'], query.Var('doc')))
+    query.Let({ doc: query.Get(query.Ref(query.Collection("blog"), articleId)) }, query.Merge( { id: query.Select(["ref", "id"], query.Var("doc")) },query.Select(['data'], query.Var('doc'))))
   );
   response.status = result.success ? 200 : 500;
   response.body = result;
