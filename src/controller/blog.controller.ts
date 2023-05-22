@@ -4,7 +4,7 @@ import { queryResult, query } from "../database/db.ts";
 const createBlogController = async ({ request, response }: RouterContext<string>) => {
   // 文章内容 # 标题 title # 分类 category 标签 tags # 创建日期 createdAt # 更新日期 updatedAt # 内容 content # 阅读次数 viewTimes # 评论数 comment
   const { title, category, tags, content, createdAt, id, description, } = await request.body().value;
-  if ( title && category && tags && content && createdAt && description) {
+  if ((!id && title && category && tags && content && description) || (id && title && category && tags && content && description && createdAt)) {
     const result = await queryResult( 'Collection', 'blog',
       !id ? (
         query.Create(query.Collection("blog"), {
@@ -29,7 +29,9 @@ const createBlogController = async ({ request, response }: RouterContext<string>
     response.body = result;
   } else {
     response.status = 500;
-    response.body = '必要的数据未填';
+    response.body = {
+      msg: '必要的数据未提交'
+    };
   }
 
 };
