@@ -50,7 +50,7 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
             title: query.Select(["data", "title"], query.Var("shipDoc")),
             category: query.Select(["data", "category"], query.Var("shipDoc")),
             tags: query.Select(["data", "tags"], query.Var("shipDoc")),
-            content: query.Select(["data", "content"], query.Var("shipDoc")),
+            description: query.Select(["data", "description"], query.Var("shipDoc")),
             createdAt: query.Select(["data", "createdAt"], query.Var("shipDoc")),
             updatedAt: query.Select(["data", "updatedAt"], query.Var("shipDoc")),
             // 评论
