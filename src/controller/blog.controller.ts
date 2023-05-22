@@ -18,7 +18,7 @@ const createBlogController = async ({ request, response }: RouterContext<string>
       ) : (
         query.Update(query.Ref(query.Collection("blog"), id), {
           data: {
-            title, category, content, tags,
+            title, category, content, tags, description,
             createdAt,
             updatedAt: new Date().toLocaleString()
           }
