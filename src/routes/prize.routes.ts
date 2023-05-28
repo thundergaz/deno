@@ -1,5 +1,5 @@
-import { Router } from "../deps.js";
-import prizeController from "../controller/prize.controller.js";
+import { Router } from "../deps.ts";
+import prizeController from "../controller/prize.controller.ts";
 
 const router = new Router();
 

@@ -57,6 +57,23 @@ const initList = [
   },
   {
     type: 'Collection',
+    name: 'mxyz',
+    action: () => query.CreateCollection({ name: "mxyz" })
+  },
+  // 创建rbyt的索引
+  {
+    type: 'Index',
+    name: 'mxyz_all_score',
+    action: () => query.CreateIndex({
+      name: "mxyz_all_score",
+      source: query.Collection("mxyz"),
+      values: [
+        { field: ["ref"] }
+      ]
+    })
+  },
+  {
+    type: 'Collection',
     name: 'rbyt',
     action: () => query.CreateCollection({ name: "rbyt" })
   },

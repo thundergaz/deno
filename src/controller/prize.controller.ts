@@ -1,5 +1,5 @@
-import { RouterContext, helpers } from "../deps.js";
-import { queryResult, query } from "../database/db.js";
+import { RouterContext, helpers } from "../deps.ts";
+import { queryResult, query } from "../database/db.ts";
 
 const createPrizeController = async ({ request, response }: RouterContext<string>) => {
   // 奖品 # 标题 title 图片 picUrl 消耗的积分 score 心愿是否怩完成 finish # 创建日期 createdAt # 内容 content

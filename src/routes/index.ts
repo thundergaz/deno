@@ -4,6 +4,7 @@ import authRouter from "./auth.routes.ts";
 import rbytRouter from "./rbyt.routes.ts";
 import blogRouter from "./blog.routes.ts";
 import prizeRouter from "./prize.routes.ts";
+import mxyzRouter from "./mxyz.routes.ts";
 
 function init(app: Application) {
   app.use(authRouter.prefix("/api/auth/").routes());
@@ -12,7 +13,7 @@ function init(app: Application) {
   app.use(rbytRouter.prefix("/api/rbyt/").routes());
   app.use(blogRouter.prefix("/api/blog/").routes());
   app.use(prizeRouter.prefix("/api/prize/").routes());
-
+  app.use(mxyzRouter.prefix("/api/mxyz/").routes());
 }
 
 export default {
