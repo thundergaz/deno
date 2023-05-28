@@ -52,7 +52,7 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
 };
 
 const getContentController = async ({ state, request, response }: RouterContext<string>) => {
-  const queryData = helpers.getQuery({ request })
+  const queryData = helpers.getQuery({ request });
   const searchDate = queryData.date;
   const result = await queryResult("Index", "rbyt_all_score",
     query.Map(
