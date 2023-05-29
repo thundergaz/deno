@@ -3,13 +3,13 @@ import { queryResult, query } from "../database/db.ts";
 
 const createPrizeController = async ({ request, response }: RouterContext<string>) => {
   // 奖品 # 标题 title 图片 picUrl 消耗的积分 score 心愿是否怩完成 finish # 创建日期 createdAt # 内容 content 积分属于 userName
-  const { title, picUrl, score, userName, createdAt, id, finish, content } = await request.body().value;
-  if ((!id && title && score && userName) || (id && title && score && finish && createdAt && userName)) {
+  const { title, picUrl, score, userName, createdAt, id, finished, content } = await request.body().value;
+  if ((!id && title && score && userName) || (id && title && score && createdAt && userName)) {
     const result = await queryResult(
       !id ? (
         query.Create(query.Collection("prize"), {
           data: {
-            title, picUrl, score ,content, userName,
+            title, picUrl, score ,content, userName, finished,
             createdAt: new Date().toLocaleString(),
           }
         }
@@ -17,7 +17,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
       ) : (
         query.Update(query.Ref(query.Collection("prize"), id), {
           data: {
-            title, picUrl, content, score, finish, userName,
+            title, picUrl, content, score, finished, userName,
             createdAt,
             updatedAt: new Date().toLocaleString()
           }
@@ -51,7 +51,7 @@ const PrizeListController = async ({ state, request ,response }: RouterContext<s
             score: query.Select(["data", "score"], query.Var("shipDoc")),
             content: query.Select(["data", "content"], query.Var("shipDoc")),
             picUrl: query.Select(["data", "picUrl"], query.Var("shipDoc")),
-            finish: query.Select(["data", "finish"], query.Var("shipDoc")),
+            finish: query.Select(["data", "finished"], query.Var("shipDoc")),
             createdAt: query.Select(["data", "createdAt"], query.Var("shipDoc")),
           }
         )
