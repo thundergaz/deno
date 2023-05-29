@@ -5,7 +5,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
   // 奖品 # 标题 title 图片 picUrl 消耗的积分 score 心愿是否怩完成 finish # 创建日期 createdAt # 内容 content
   const { title, picUrl, score, createdAt, id, finish, content } = await request.body().value;
   if ((!id && title && score) || (id && title && score && finish && createdAt)) {
-    const result = await queryResult( 'Collection', 'prize',
+    const result = await queryResult(
       !id ? (
         query.Create(query.Collection("prize"), {
           data: {
@@ -37,7 +37,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
 const PrizeListController = async ({ state, request ,response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
   const userName = queryData.name;
-  const result = await queryResult( 'Index', 'prize_list',
+  const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("prize_list"), userName)),
       query.Lambda(['time', 'prizeRef'],

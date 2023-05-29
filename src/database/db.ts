@@ -3,6 +3,7 @@ import Client from "https://esm.sh/faunadb@4.7.1";
 
 // Grab the secret from the environment.
 const token = Deno.env.get("FAUNA_SECRET");
+console.log(token);
 if (!token) {
   throw new Error("environment variable FAUNA_SECRET not set");
 }
@@ -89,21 +90,19 @@ const initList = [
       ]
     })
   },
-]
-
-const queryResult = async (type, name, cb) => {
-  const targetAction = initList.filter(item => item.name === name && item.type === type)[0];
+];
+ function initDatabase() {
+  initList.forEach(
+    async item => {
+      const res = await client.query(query.If(query.Exists(query[item.type](item.name)), `${item.type} ${item.name} is ready.`, item.action()));
+      console.log(res);
+    }
+  )
+ }
+ initDatabase();
+ const queryResult = async (cb) => {
   return await client
-    // .query(query.If(query.Exists(query[targetAction.type](targetAction.name)), cb, targetAction.action()))
-    .query(
-      query.If(
-        query.Exists(
-          query[targetAction.type](targetAction.name)
-        ),
-        cb,
-        targetAction.action()
-      )
-    )
+    .query(cb)
     .then((ret) => {
       return {
         ...ret,

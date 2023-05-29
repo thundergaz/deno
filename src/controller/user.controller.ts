@@ -23,7 +23,7 @@ const getMeController = ({ state, response }: RouterContext<string>) => {
 };
 // 获取用户列表
 const userListController = async ({ state, response }: RouterContext<string>) => {
-  const result = await queryResult( 'Index', 'allUsers',
+  const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("allUsers"))),
       query.Lambda('userRef',

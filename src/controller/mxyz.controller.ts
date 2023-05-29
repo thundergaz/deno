@@ -3,7 +3,7 @@ import { queryResult, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
   const { item, date, id } = await request.body().value;
-  const result = await queryResult('Collection', 'mxyz',
+  const result = await queryResult(
     !id ? (
       query.Create(query.Collection("mxyz"), {
         data: {
@@ -30,7 +30,7 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
 };
 
 const scoreListController = async ({ state, response }: RouterContext<string>) => {
-  const result = await queryResult("Index", "mxyz_all_score",
+  const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("mxyz_all_score"))),
       query.Lambda('scoreRef',
@@ -54,7 +54,7 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
 const getContentController = async ({ state, request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
   const searchDate = queryData.date;
-  const result = await queryResult("Index", "mxyz_all_score",
+  const result = await queryResult(
     query.Map(
       query.Filter(
         query.Paginate(query.Match(query.Index("mxyz_all_score"))),
