@@ -2,13 +2,15 @@ import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
-  const { item, date, id } = await request.body().value;
+  const { item, date, title, id } = await request.body().value;
   const result = await queryResult(
     !id ? (
       query.Create(query.Collection("mxyz"), {
         data: {
           // 加分项
           item,
+          // 标题
+          title,
           // 加分的时间
           date
         }
@@ -19,6 +21,8 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
         data: {
           // 加分项
           item,
+          // 标题
+          title,
           // 加分的时间
           date
         }
