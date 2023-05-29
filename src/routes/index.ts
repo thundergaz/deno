@@ -5,6 +5,7 @@ import rbytRouter from "./rbyt.routes.ts";
 import blogRouter from "./blog.routes.ts";
 import prizeRouter from "./prize.routes.ts";
 import mxyzRouter from "./mxyz.routes.ts";
+import logRouter from "./log.routes.ts"
 
 function init(app: Application) {
   app.use(authRouter.prefix("/api/auth/").routes());
@@ -14,6 +15,7 @@ function init(app: Application) {
   app.use(blogRouter.prefix("/api/blog/").routes());
   app.use(prizeRouter.prefix("/api/prize/").routes());
   app.use(mxyzRouter.prefix("/api/mxyz/").routes());
+  app.use(logRouter.prefix("/api/log/").routes());
 }
 
 export default {

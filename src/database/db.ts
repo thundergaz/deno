@@ -14,6 +14,27 @@ var client = new Client.Client({
 });
 // 查看初始化的配置是否完整，没有就需要重新创建
 const initList = [
+  // 加分日志
+  {
+    type: 'Collection',
+    name: 'score_log',
+    action: () => query.CreateCollection({ name: "score_log" })
+  },
+  {
+    type: 'Index',
+    name: 'score_log_list',
+    action: () => query.CreateIndex({
+      name: "score_log_list",
+      source: query.Collection("score_log"),
+      terms: [
+        { field: ["data", "type"] }
+      ],
+      values: [
+        { field: ["data", "createAt"], reverse: true },
+        { field: ["ref"] }
+      ]
+    })
+  },
   // 奖品表检查
   {
     type: 'Collection',
