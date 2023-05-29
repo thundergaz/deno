@@ -37,7 +37,7 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
   const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("mxyz_all_score"))),
-      query.Lambda('scoreRef',
+      query.Lambda(['time', 'scoreRef'],
         query.Let(
           {
             shipDoc: query.Get(query.Var("scoreRef"))
@@ -64,14 +64,14 @@ const getContentController = async ({ state, request, response }: RouterContext<
       query.Filter(
         query.Paginate(query.Match(query.Index("mxyz_all_score"))),
         query.Lambda(
-          "planetRef",
+          ['time', 'planetRef'],
           query.ContainsStr(
             query.Select(["data", "date"], query.Get(query.Var("planetRef"))),
             searchDate
           )
         )
       ),
-      query.Lambda("scoreRef", query.Let(
+      query.Lambda(['time', 'scoreRef'], query.Let(
         {
           shipDoc: query.Get(query.Var("scoreRef"))
         },

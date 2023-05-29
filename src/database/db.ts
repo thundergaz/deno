@@ -89,6 +89,7 @@ const initList = [
       name: "mxyz_all_score",
       source: query.Collection("mxyz"),
       values: [
+        { field: ["data", "date"], reverse: true },
         { field: ["ref"] }
       ]
     })
@@ -106,6 +107,7 @@ const initList = [
       name: "rbyt_all_score",
       source: query.Collection("rbyt"),
       values: [
+        { field: ["data", "date"], reverse: true },
         { field: ["ref"] }
       ]
     })
