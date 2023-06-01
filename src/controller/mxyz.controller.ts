@@ -3,6 +3,7 @@ import { queryResult, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
   const { item, date, title, id } = await request.body().value;
+  // 查看增加内容如果有加分，就添加日志，更新的时候有一些为难。
   const result = await queryResult(
     !id ? (
       query.Create(query.Collection("mxyz"), {

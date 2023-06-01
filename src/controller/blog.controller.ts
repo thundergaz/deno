@@ -33,7 +33,6 @@ const createBlogController = async ({ request, response }: RouterContext<string>
       msg: '必要的数据未提交'
     };
   }
-
 };
 
 const blogListController = async ({ state, response }: RouterContext<string>) => {
