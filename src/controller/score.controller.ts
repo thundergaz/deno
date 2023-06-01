@@ -24,11 +24,19 @@ const createScoreController = async ({ request, response }: RouterContext<string
 // 积分列表
 const scoreListController = async ({ state, request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
-  const { userName, type } = queryData;
+  const { userName } = queryData;
   const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("score_list"), userName)),
-      query.Lambda(['time', 'prizeRef'], query.Get(query.Var("prizeRef")))
+      query.Lambda(['time', 'prizeRef'], query.Let(
+        {
+          shipDoc: query.Get(query.Var("prizeRef"))
+        },
+        {
+          id: query.Select(["ref", "id"], query.Var("prizeRef")),
+          ...query.Select(["data"], query.Var("prizeRef")),
+        }
+      ))
     )
   );
   response.status = result.success ? 200 : 500;
