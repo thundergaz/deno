@@ -46,12 +46,7 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
           },
           {
             id: query.Select(["ref", "id"], query.Var("shipDoc")),
-            title: query.Select(["data", "title"], query.Var("shipDoc")),
-            category: query.Select(["data", "category"], query.Var("shipDoc")),
-            tags: query.Select(["data", "tags"], query.Var("shipDoc")),
-            description: query.Select(["data", "description"], query.Var("shipDoc")),
-            createdAt: query.Select(["data", "createdAt"], query.Var("shipDoc")),
-            updatedAt: query.Select(["data", "updatedAt"], query.Var("shipDoc")),
+            raw: query.Select(["data"], query.Var("shipDoc")),
           }
         )
       )

@@ -30,7 +30,7 @@ const initList = [
         { field: ["data", "userName"] }
       ],
       values: [
-        { field: ["data", "createAt"], reverse: true },
+        { field: ["data", "date"], reverse: true },
         { field: ["ref"] }
       ]
     })
@@ -127,7 +127,7 @@ const queryResult = async (cb) => {
     .query(cb)
     .then((ret) => {
       return {
-        ...ret,
+        ...{ data: deconstructionRaw(ret.data) },
         success: true
       }
     })
@@ -138,4 +138,18 @@ const queryResult = async (cb) => {
       }
     })
 };
+// 解构对像raw
+function deconstructionRaw(obj) {
+  if (Array.isArray(obj)) {
+    return [...obj].map( x => deconstructionRaw(x));
+  } else {
+    const temOjb = { ...obj };
+    if (temOjb.raw) {
+      delete temOjb.raw;
+      return { ...temOjb, ...obj.raw };
+    } else {
+      return obj
+    }
+  }
+}
 export { queryResult, client, query };

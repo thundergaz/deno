@@ -47,12 +47,7 @@ const PrizeListController = async ({ state, request ,response }: RouterContext<s
           },
           {
             id: query.Select(["ref", "id"], query.Var("shipDoc")),
-            title: query.Select(["data", "title"], query.Var("shipDoc")),
-            score: query.Select(["data", "score"], query.Var("shipDoc")),
-            content: query.Select(["data", "content"], query.Var("shipDoc")),
-            picUrl: query.Select(["data", "picUrl"], query.Var("shipDoc")),
-            finish: query.Select(["data", "finished"], query.Var("shipDoc")),
-            createdAt: query.Select(["data", "createdAt"], query.Var("shipDoc")),
+            raw: query.Select(["data"], query.Var("shipDoc")),
           }
         )
       )
