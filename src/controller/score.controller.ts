@@ -1,6 +1,6 @@
 import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
-import { updateUserScore } from "./tools.ts"
+import { updateUserScore, getUserScore } from "./tools.ts"
 const createScoreController = async ({ request, response }: RouterContext<string>) => {
   // 日期 date 积分数 score 描述 description
   /**
@@ -15,12 +15,16 @@ const createScoreController = async ({ request, response }: RouterContext<string
   if (date && score && description && userName && type) {
     const targetScore = ['minus','disable'].includes(type) ? -(score) : score;
     const result = await queryResult(
+      // 更新积分
+      updateUserScore(userName, targetScore),
+      // 这里得记录一下，加分后积分是多少。
       query.Create(query.Collection("score"), {
         data: {
-          date, score, description, userName, type
+          date, score, description, userName, type,
+          // 更新后是多少分
+          afterScore: getUserScore(userName)
         }
-      }),
-      updateUserScore(userName, targetScore),
+      })
     );
     response.status = result.success ? 200 : 500;
     response.body = result;

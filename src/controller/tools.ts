@@ -13,3 +13,6 @@ export const updateUserScore = (userName, score) =>
             })
         )
     );
+// 获取用户的积分
+export const getUserScore = (userName) =>
+    query.Select(["data", "score"], query.Get(query.Select([0], query.Paginate(query.Match(query.Index("user_by_name"), userName)))));
