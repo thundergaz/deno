@@ -1,6 +1,7 @@
-import type { RouterContext } from "../deps.ts";
+import { RouterContext, helpers } from "../deps.ts";
 import { users } from "./auth.controller.ts";
 import { queryResult, query } from "../database/db.ts";
+import { updateUserScore } from "./tools.ts"
 
 // 获取当前用户
 const getMeController = ({ state, response }: RouterContext<string>) => {
@@ -20,6 +21,29 @@ const getMeController = ({ state, response }: RouterContext<string>) => {
     };
     return;
   }
+};
+// 获取用户信息
+const getUserController = async ({ state, request, response }: RouterContext<string>) => {
+  const queryData = helpers.getQuery({ request });
+  const userName = queryData.name;
+  const result = await queryResult(
+    query.Let(
+      {
+        resdata: query.Paginate(query.Match(query.Index("user_by_name"), userName))
+      },
+      query.Let(
+        {
+          resData1: query.Get(query.Select([0], query.Var("resdata")))
+        },
+        query.Merge( 
+          { id: query.Select(["ref", "id"], query.Var("resData1")) },
+          query.Select(['data'], query.Var('resData1'))
+        )
+      )
+    )
+  );
+  response.status = result.success ? 200 : 500;
+  response.body = result;
 };
 // 获取用户列表
 const userListController = async ({ state, response }: RouterContext<string>) => {
@@ -45,4 +69,4 @@ const userListController = async ({ state, response }: RouterContext<string>) =>
   response.body = result;
 };
 
-export default { getMeController, userListController };
+export default { getMeController, userListController, getUserController };

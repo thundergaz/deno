@@ -44,10 +44,10 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
           {
             shipDoc: query.Get(query.Var("blogRef"))
           },
-          {
-            id: query.Select(["ref", "id"], query.Var("shipDoc")),
-            raw: query.Select(["data"], query.Var("shipDoc")),
-          }
+          query.Merge( 
+            { id: query.Select(["ref", "id"], query.Var("shipDoc")) },
+            query.Select(['data'], query.Var('shipDoc'))
+          )
         )
       )
     )
@@ -60,7 +60,13 @@ const detailContentController = async ({ state, request, response }: RouterConte
   const queryData = helpers.getQuery({ request })
   const articleId = queryData.id;
   const result = await queryResult(
-    query.Let({ doc: query.Get(query.Ref(query.Collection("blog"), articleId)) }, query.Merge( { id: query.Select(["ref", "id"], query.Var("doc")) },query.Select(['data'], query.Var('doc'))))
+    query.Let(
+      { doc: query.Get(query.Ref(query.Collection("blog"), articleId)) },
+      query.Merge( 
+        { id: query.Select(["ref", "id"], query.Var("doc")) },
+        query.Select(['data'], query.Var('doc'))
+      )
+    )
   );
   response.status = result.success ? 200 : 500;
   response.body = result;

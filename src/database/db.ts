@@ -14,6 +14,26 @@ var client = new Client.Client({
 });
 // 查看初始化的配置是否完整，没有就需要重新创建
 const initList = [
+  // 用户表
+  {
+    type: 'Collection',
+    name: 'User',
+    action: () => query.CreateCollection({ name: "User" })
+  },
+  {
+    type: 'Index',
+    name: 'user_by_name',
+    action: () => query.CreateIndex({
+      name: "user_by_name",
+      source: query.Collection("User"),
+      terms: [
+        { field: ["data", "name"] }
+      ],
+      values: [
+        { field: ["ref"] }
+      ]
+    })
+  },
   // 积分表
   {
     type: 'Collection',
@@ -122,12 +142,16 @@ function initDatabase() {
   )
 }
 initDatabase();
-const queryResult = async (cb) => {
+const queryResult = async (...cb) => {
   return await client
-    .query(cb)
+    .query(
+      query.Do(
+        ...cb
+      )
+    )
     .then((ret) => {
       return {
-        ...{ data: deconstructionRaw(ret.data) },
+        ...ret,
         success: true
       }
     })
@@ -138,18 +162,4 @@ const queryResult = async (cb) => {
       }
     })
 };
-// 解构对像raw
-function deconstructionRaw(obj) {
-  if (Array.isArray(obj)) {
-    return [...obj].map( x => deconstructionRaw(x));
-  } else {
-    const temOjb = { ...obj };
-    if (temOjb.raw) {
-      delete temOjb.raw;
-      return { ...temOjb, ...obj.raw };
-    } else {
-      return obj
-    }
-  }
-}
 export { queryResult, client, query };
