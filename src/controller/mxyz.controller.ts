@@ -2,16 +2,16 @@ import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
-  const { item, date, title, id } = await request.body().value;
+  const { date, title, description ,id } = await request.body().value;
   // 查看增加内容如果有加分，就添加日志，更新的时候有一些为难。
   const result = await queryResult(
     !id ? (
       query.Create(query.Collection("mxyz"), {
         data: {
-          // 加分项
-          item,
           // 标题
           title,
+          // 描述
+          description,
           // 加分的时间
           date
         }
@@ -20,8 +20,8 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
     ) : (
       query.Update(query.Ref(query.Collection("mxyz"), id), {
         data: {
-          // 加分项
-          item,
+          // 描述
+          description,
           // 标题
           title,
           // 加分的时间
