@@ -14,9 +14,11 @@ const createScoreController = async ({ request, response }: RouterContext<string
   const { date, score, description, userName, type } = await request.body().value;
   if (date && score && description && userName && type) {
     const targetScore = ['minus','disable'].includes(type) ? -(score) : score;
+    const needAddExp = ['add', 'repair', 'task'].includes(type);
+
     const result = await queryResult(
-      // 更新积分
-      updateUserScore(userName, targetScore),
+      // 更新积分 有可能是加，有可能是减
+      updateUserScore(userName, targetScore, needAddExp),
       // 这里得记录一下，加分后积分是多少。
       query.Create(query.Collection("score"), {
         data: {

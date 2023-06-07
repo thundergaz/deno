@@ -1,8 +1,11 @@
 import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
+import { addScoreLog } from "./tools.ts"
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
-  const { date, title, description ,id } = await request.body().value;
+  const { date, title, description, id } = await request.body().value;
+  const type = 'task';
+  const scoreDescription = `完成了今日记录任务，增加5分。`;
   // 查看增加内容如果有加分，就添加日志，更新的时候有一些为难。
   const result = await queryResult(
     !id ? (
@@ -16,7 +19,8 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
           date
         }
       }
-      )
+      ),
+      addScoreLog(date, 'mxyz', 5, scoreDescription, type)
     ) : (
       query.Update(query.Ref(query.Collection("mxyz"), id), {
         data: {
