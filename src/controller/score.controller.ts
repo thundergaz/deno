@@ -43,7 +43,7 @@ const scoreListController = async ({ state, request, response }: RouterContext<s
   const { userName } = queryData;
   const result = await queryResult(
     query.Map(
-      query.Paginate(query.Match(query.Index("score_list"), userName)),
+      query.Paginate(query.Match(query.Index("score_list"), userName), { size: 10 }),
       query.Lambda(['time', 'prizeRef'], query.Let(
         {
           shipDoc: query.Get(query.Var("prizeRef"))
