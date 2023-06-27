@@ -1,6 +1,7 @@
 import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
-import { updateUserScore, getUserScore } from "./tools.ts"
+import { updateUserScore, getUserScore } from "./tools.ts";
+// 增加积分
 const createScoreController = async ({ request, response }: RouterContext<string>) => {
   // 日期 date 积分数 score 描述 description
   /**
@@ -59,4 +60,41 @@ const scoreListController = async ({ state, request, response }: RouterContext<s
   response.body = result;
 };
 
-export default { scoreListController, createScoreController };
+// 积分转移
+const scoreTransferController = async ({ request, response }: RouterContext<string>) => {
+  const { score, userName, to } = await request.body().value;
+  const date = new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' });
+  if (score && userName && to) {
+    const result = await queryResult(
+      // userName 减少 score的积分 无经验
+      updateUserScore(userName, -score, false),
+      // userName 增加日志 你转移给 to score 积分
+      query.Create(query.Collection("score"), {
+        data: {
+          date, score, description: `你转移给${to} ${score} 积分`, userName, type: 'minus',
+          // 更新后是多少分
+          afterScore: getUserScore(userName)
+        }
+      }),
+      // to 增加 score 积分 无经验
+      updateUserScore(to, score, false),
+      // to 增加日志 userName 转移给你 score 积分
+      query.Create(query.Collection("score"), {
+        data: {
+          date, score, description: `${userName}转移给你 ${score} 积分`, to, type: 'add',
+          // 更新后是多少分
+          afterScore: getUserScore(to)
+        }
+      }),
+    );
+    response.status = result.success ? 200 : 500;
+    response.body = result;
+  } else {
+    response.status = 500;
+    response.body = {
+      msg: '必要的数据未提交'
+    };
+  }
+}
+
+export default { scoreListController, createScoreController, scoreTransferController };

@@ -7,5 +7,6 @@ router.use(requireUser);
 
 router.post<string>("/add", scoreController.createScoreController);
 router.get<string>("/list", scoreController.scoreListController);
+router.post<string>("/deal", scoreController.scoreTransferController);
 
 export default router;

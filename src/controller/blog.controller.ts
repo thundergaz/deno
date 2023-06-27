@@ -10,8 +10,8 @@ const createBlogController = async ({ request, response }: RouterContext<string>
         query.Create(query.Collection("blog"), {
           data: {
             title, category, description ,content, tags,
-            createdAt: new Date().toLocaleString(),
-            updatedAt: new Date().toLocaleString(),
+            createdAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
+            updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
           }
         }
         )
@@ -20,7 +20,7 @@ const createBlogController = async ({ request, response }: RouterContext<string>
           data: {
             title, category, content, tags, description,
             createdAt,
-            updatedAt: new Date().toLocaleString()
+            updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' })
           }
         })
       )

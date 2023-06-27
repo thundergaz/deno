@@ -10,7 +10,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
         query.Create(query.Collection("prize"), {
           data: {
             title, picUrl, score ,content, userName, finished,
-            createdAt: new Date().toLocaleString(),
+            createdAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
           }
         }
         )
@@ -19,7 +19,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
           data: {
             title, picUrl, content, score, finished, userName,
             createdAt,
-            updatedAt: new Date().toLocaleString()
+            updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' })
           }
         })
       )
