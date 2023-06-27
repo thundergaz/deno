@@ -5,7 +5,7 @@ import requireUser from "../middleware/requireUser.ts";
 const router = new Router();
 
 router.get<string>("/me", requireUser, userController.getMeController);
-router.get<string>("/user", userController.getUserController);
-router.get<string>("/userList", userController.userListController);
+router.get<string>("/user", requireUser, userController.getUserController);
+router.get<string>("/userList", requireUser, userController.userListController);
 
 export default router;

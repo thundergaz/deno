@@ -47,12 +47,14 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
           {
             shipDoc: query.Get(query.Var("scoreRef"))
           },
-          {
-            id: query.Select(["ref", "id"], query.Var("shipDoc")),
-            title: query.Select(["data", "title"], query.Var("shipDoc")),
-            item: query.Select(["data", "item"], query.Var("shipDoc")),
-            date: query.Select(["data", "date"], query.Var("shipDoc")),
-          }
+          query.query.Merge(
+            {
+              id: query.Select(["ref", "id"], query.Var("shipDoc")),
+              title: query.Select(["data", "title"], query.Var("shipDoc")),
+              date: query.Select(["data", "date"], query.Var("shipDoc")),
+            },
+            query.If(!!state.user_id, { item: query.Select(["data", "item"], query.Var("shipDoc"))}, {})
+          )
         )
       )
     )

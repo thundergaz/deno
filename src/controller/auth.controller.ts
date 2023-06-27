@@ -2,17 +2,39 @@ import { RouterContext } from "../deps.ts";
 import { signJwt, verifyJwt } from "../utils/jwt.ts";
 
 export type IUser = {
-  id: string;
+  id?: string;
   name: string;
-  email: string;
-  createdAt: Date;
-  updatedAt: Date;
+  type?: string;
+  email?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
-export const users: IUser[] = [];
+export const users: IUser[] = [
+  {
+    email: '',
+    name: 'rbyt',
+    type: 'use'
+  },
+  {
+    email: '',
+    name: 'mxyz',
+    type: 'use'
+  },
+  {
+    email: '',
+    name: 'sturat',
+    type: 'manage'
+  },
+  {
+    email: '',
+    name: 'abby',
+    type: 'manage'
+  },
+];
 
-const ACCESS_TOKEN_EXPIRES_IN = 15;
-const REFRESH_TOKEN_EXPIRES_IN = 60;
+const ACCESS_TOKEN_EXPIRES_IN = 60 * 24;
+const REFRESH_TOKEN_EXPIRES_IN = 60 * 24 * 30;
 
 const signUpUserController = async ({
   request,
@@ -21,12 +43,11 @@ const signUpUserController = async ({
   try {
     const {
       name,
-      email,
-      password,
+      email
     }: { name: string; email: string; password: string } = await request.body()
       .value;
 
-    const userExists = users.find((user) => user.email === email);
+    const userExists = users.find((user) => user.name === name);
     if (userExists) {
       response.status = 409;
       response.body = {
@@ -66,10 +87,10 @@ const loginUserController = async ({
   cookies,
 }: RouterContext<string>) => {
   try {
-    const { email, password }: { email: string; password: string } =
+    const { name, password }: { name: string; password: string } =
       await request.body().value;
 
-    const user = users.find((user) => user.email === email);
+    const user = users.find((user) => user.name === name);
 
     if (!user) {
       response.status = 401;
@@ -86,35 +107,21 @@ const loginUserController = async ({
     const refreshTokenExpiresIn = new Date(
       Date.now() + REFRESH_TOKEN_EXPIRES_IN * 60 * 1000
     );
-
     const { token: access_token } = await signJwt({
-      user_id: user.id,
+      user_id: user.name,
       privateKeyPem: "ACCESS_TOKEN_PRIVATE_KEY",
       expiresIn: accessTokenExpiresIn,
       issuer: "website.com",
     });
     const { token: refresh_token } = await signJwt({
-      user_id: user.id,
+      user_id: user.name,
       privateKeyPem: "REFRESH_TOKEN_PRIVATE_KEY",
       expiresIn: refreshTokenExpiresIn,
       issuer: "website.com",
     });
 
-    cookies.set("access_token", access_token, {
-      expires: accessTokenExpiresIn,
-      maxAge: ACCESS_TOKEN_EXPIRES_IN * 60,
-      httpOnly: true,
-      secure: false,
-    });
-    cookies.set("refresh_token", refresh_token, {
-      expires: refreshTokenExpiresIn,
-      maxAge: REFRESH_TOKEN_EXPIRES_IN * 60,
-      httpOnly: true,
-      secure: false,
-    });
-
     response.status = 200;
-    response.body = { status: "success", access_token };
+    response.body = { status: "success", access_token, refresh_token };
   } catch (error) {
     response.status = 500;
     response.body = { status: "error", message: error.message };
@@ -123,13 +130,15 @@ const loginUserController = async ({
 };
 // 刷新 token
 const refreshAccessTokenController = async ({
+  request,
   response,
   cookies,
 }: RouterContext<string>) => {
   try {
-    const refresh_token = await cookies.get("refresh_token");
+    const authorization = await request.headers.get("Authorization");
 
     const message = "Could not refresh access token";
+    const refresh_token = authorization.split(" ")[1];
 
     if (!refresh_token) {
       response.status = 403;
@@ -139,7 +148,7 @@ const refreshAccessTokenController = async ({
       };
       return;
     }
-
+    // 验证刷新token
     const decoded = await verifyJwt<{ sub: string }>({
       token: refresh_token,
       publicKeyPem: "REFRESH_TOKEN_PUBLIC_KEY",
@@ -154,6 +163,7 @@ const refreshAccessTokenController = async ({
       return;
     }
 
+    // 生成新的访问令牌
     const accessTokenExpiresIn = new Date(
       Date.now() + ACCESS_TOKEN_EXPIRES_IN * 60 * 1000
     );
@@ -163,13 +173,6 @@ const refreshAccessTokenController = async ({
       issuer: "website.com",
       privateKeyPem: "ACCESS_TOKEN_PRIVATE_KEY",
       expiresIn: accessTokenExpiresIn,
-    });
-
-    cookies.set("access_token", access_token, {
-      expires: accessTokenExpiresIn,
-      maxAge: ACCESS_TOKEN_EXPIRES_IN * 60,
-      httpOnly: true,
-      secure: false,
     });
 
     response.status = 200;
