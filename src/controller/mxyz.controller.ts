@@ -51,7 +51,7 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
               title: query.Select(["data", "title"], query.Var("shipDoc")),
               date: query.Select(["data", "date"], query.Var("shipDoc")),
             },
-            query.If(!!state.user_id, { item: query.Select(["data", "item"], query.Var("shipDoc"))}, {})
+            query.If(!!state.user_id, { description: query.Select(["data", "description"], query.Var("shipDoc"), '')}, {})
           )
         )
       )
