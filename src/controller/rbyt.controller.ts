@@ -3,9 +3,9 @@ import { queryResult, query } from "../database/db.ts";
 
 const addScoreController = async ({ request, response }: RouterContext<string>) => {
   const { item, date, id } = await request.body().value;
-  const result = await queryResult(
+  const result = 
     !id ? (
-      query.Create(query.Collection("rbyt"), {
+      await queryResult(query.Create(query.Collection("rbyt"), {
         data: {
           // 加分项
           item,
@@ -13,9 +13,9 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
           date
         }
       }
-      )
+      ))
     ) : (
-      query.Update(query.Ref(query.Collection("rbyt"), id), {
+      await queryResult(query.Update(query.Ref(query.Collection("rbyt"), id), {
         data: {
           // 加分项
           item,

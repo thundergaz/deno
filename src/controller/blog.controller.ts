@@ -5,18 +5,17 @@ const createBlogController = async ({ request, response }: RouterContext<string>
   // 文章内容 # 标题 title # 分类 category 标签 tags # 创建日期 createdAt # 更新日期 updatedAt # 内容 content # 阅读次数 viewTimes # 评论数 comment
   const { title, category, tags, content, createdAt, id, description, } = await request.body().value;
   if ((!id && title && category && tags && content && description) || (id && title && category && tags && content && description && createdAt)) {
-    const result = await queryResult(
-      !id ? (
-        query.Create(query.Collection("blog"), {
+    const result = !id ? (
+        await queryResult(query.Create(query.Collection("blog"), {
           data: {
             title, category, description ,content, tags,
             createdAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
             updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
           }
         }
-        )
+        ))
       ) : (
-        query.Update(query.Ref(query.Collection("blog"), id), {
+        await queryResult(query.Update(query.Ref(query.Collection("blog"), id), {
           data: {
             title, category, content, tags, description,
             createdAt,
