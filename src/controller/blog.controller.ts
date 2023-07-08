@@ -70,7 +70,14 @@ const detailContentController = async ({ request, response }: RouterContext<stri
       { doc: query.Get(query.Ref(query.Collection("blog"), articleId)) },
       query.Merge( 
         { id: query.Select(["ref", "id"], query.Var("doc")) },
-        query.Select(['data'], query.Var('doc'))
+        [
+          query.Select(['data'], query.Var('doc')),
+          {
+            // 需要对时间进行转换
+            createdAt: query.Format('%t', query.Select(['data', 'createdAt'], query.Var('shipDoc'))),
+            updatedAt: query.Format('%t', query.Select(['data', 'updatedAt'], query.Var('shipDoc'))),
+          },
+        ]
       )
     )
   );
