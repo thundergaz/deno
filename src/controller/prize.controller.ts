@@ -5,11 +5,12 @@ const createPrizeController = async ({ request, response }: RouterContext<string
   // 奖品 # 标题 title 图片 picUrl 消耗的积分 score 心愿是否怩完成 finish # 创建日期 createdAt # 内容 content 积分属于 userName
   const { title, picUrl, score, userName, createdAt, id, finished, content } = await request.body().value;
   if ((!id && title && score && userName) || (id && title && score && createdAt && userName)) {
+    const nowTime = new Date().toISOString();
     const result = !id ? (
         await queryResult(query.Create(query.Collection("prize"), {
           data: {
             title, picUrl, score ,content, userName, finished,
-            createdAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
+            createdAt: query.ToTime(nowTime),
           }
         }
         ))
@@ -18,7 +19,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
           data: {
             title, picUrl, content, score, finished, userName,
             createdAt,
-            updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' })
+            updatedAt: query.ToTime(nowTime)
           }
         })
       )
@@ -33,7 +34,7 @@ const createPrizeController = async ({ request, response }: RouterContext<string
   }
 };
 
-const PrizeListController = async ({ state, request ,response }: RouterContext<string>) => {
+const PrizeListController = async ({ request ,response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
   const userName = queryData.name;
   const result = await queryResult(
@@ -44,9 +45,15 @@ const PrizeListController = async ({ state, request ,response }: RouterContext<s
           {
             shipDoc: query.Get(query.Var("prizeRef"))
           },
-          query.Merge( 
+          query.Merge(
             { id: query.Select(["ref", "id"], query.Var("shipDoc")) },
-            query.Select(['data'], query.Var('shipDoc'))
+            [
+              query.Select(['data'], query.Var('shipDoc')),
+              {
+                // 需要对时间进行转换
+                createdAt: query.Format('%t', query.Select(['data', 'createdAt'], query.Var('shipDoc'))),
+              }
+            ]
           )
         )
       )

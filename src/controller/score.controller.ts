@@ -1,6 +1,6 @@
 import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
-import { updateUserScore, getUserScore } from "./tools.ts";
+import { updateUserScore, getUserScore, addScoreLog } from "./tools.ts";
 // 增加积分
 const createScoreController = async ({ request, response }: RouterContext<string>) => {
   // 日期 date 积分数 score 描述 description
@@ -14,20 +14,8 @@ const createScoreController = async ({ request, response }: RouterContext<string
    */
   const { date, score, description, userName, type } = await request.body().value;
   if (date && score && description && userName && type) {
-    const targetScore = ['minus','disable'].includes(type) ? -(score) : score;
-    const needAddExp = ['add', 'repair', 'task'].includes(type);
-
     const result = await queryResult(
-      // 更新积分 有可能是加，有可能是减
-      updateUserScore(userName, targetScore, needAddExp),
-      // 这里得记录一下，加分后积分是多少。
-      query.Create(query.Collection("score"), {
-        data: {
-          date, score, description, userName, type,
-          // 更新后是多少分
-          afterScore: getUserScore(userName)
-        }
-      })
+      addScoreLog(date, userName, score, description, type),
     );
     response.status = result.success ? 200 : 500;
     response.body = result;
@@ -39,7 +27,7 @@ const createScoreController = async ({ request, response }: RouterContext<string
   }
 };
 // 积分列表
-const scoreListController = async ({ state, request, response }: RouterContext<string>) => {
+const scoreListController = async ({ request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
   const { userName } = queryData;
   const result = await queryResult(
@@ -49,9 +37,13 @@ const scoreListController = async ({ state, request, response }: RouterContext<s
         {
           shipDoc: query.Get(query.Var("prizeRef"))
         },
-        query.Merge( 
-          { id: query.Select(["ref", "id"], query.Var("shipDoc")) },
-          query.Select(['data'], query.Var('shipDoc'))
+        query.Merge(
+          query.Select(['data'], query.Var('shipDoc')),
+          {
+            id: query.Select(["ref", "id"], query.Var("shipDoc")),
+            // 需要对时间进行转换
+            date: query.Format('%t', query.Select(['data', 'date'], query.Var('shipDoc')))
+          },
         ),
       ))
     )
@@ -60,7 +52,7 @@ const scoreListController = async ({ state, request, response }: RouterContext<s
   response.body = result;
 };
 
-// 积分转移
+// 积分转移 目前还没有使用
 const scoreTransferController = async ({ request, response }: RouterContext<string>) => {
   const { score, userName, to } = await request.body().value;
   const date = new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' });

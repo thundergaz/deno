@@ -6,6 +6,8 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
   const { date, title, description, id } = await request.body().value;
   const type = 'task';
   const scoreDescription = `完成了今日记录任务，增加5分。`;
+  // 这里的时间必须是标准时间，以防万一，进行标准化。
+  const nowTime = new Date(date).toISOString();
   // 查看增加内容如果有加分，就添加日志，更新的时候有一些为难。
   const result = !id ? await queryResult(
     query.Create(query.Collection("mxyz"), {
@@ -15,7 +17,7 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
         // 描述
         description,
         // 加分的时间
-        date
+        date: query.ToTime(nowTime)
       }
     }
     ),
@@ -28,7 +30,7 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
         // 标题
         title,
         // 加分的时间
-        date
+        date: query.ToTime(nowTime)
       }
     })
   );
@@ -49,7 +51,7 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
             {
               id: query.Select(["ref", "id"], query.Var("shipDoc")),
               title: query.Select(["data", "title"], query.Var("shipDoc")),
-              date: query.Select(["data", "date"], query.Var("shipDoc")),
+              date: query.Format('%t',query.Select(["data", "date"], query.Var("shipDoc"))),
             },
             query.If(!!state.user_id, { description: query.Select(["data", "description"], query.Var("shipDoc"), '')}, {})
           )
@@ -61,19 +63,17 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
   response.body = result;
 };
 // 查找某天的内容，用于更新
-const getContentController = async ({ state, request, response }: RouterContext<string>) => {
+const getContentController = async ({ request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
-  const searchDate = queryData.date;
+  // 这里的时间必须是标准时间，以防万一，进行标准化。
+  const searchDate = new Date(queryData.date).toISOString();
   const result = await queryResult(
     query.Map(
       query.Filter(
         query.Paginate(query.Match(query.Index("mxyz_all_score"))),
         query.Lambda(
           ['time', 'planetRef'],
-          query.ContainsStr(
-            query.Select(["data", "date"], query.Get(query.Var("planetRef"))),
-            searchDate
-          )
+          query.Equals(query.TimeDiff(query.Select(["data", "date"], query.Get(query.Var("planetRef"))), query.ToTime(searchDate), 'days'),0)
         )
       ),
       query.Lambda(['time', 'scoreRef'], query.Let(
@@ -84,7 +84,7 @@ const getContentController = async ({ state, request, response }: RouterContext<
           id: query.Select(["ref", "id"], query.Var("shipDoc")),
           title: query.Select(["data", "title"], query.Var("shipDoc")),
           item: query.Select(["data", "item"], query.Var("shipDoc")),
-          date: query.Select(["data", "date"], query.Var("shipDoc")),
+          date: query.Format('%t',query.Select(["data", "date"], query.Var("shipDoc"))),
         }
       ))
     )

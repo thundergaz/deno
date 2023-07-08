@@ -5,12 +5,13 @@ const createBlogController = async ({ request, response }: RouterContext<string>
   // 文章内容 # 标题 title # 分类 category 标签 tags # 创建日期 createdAt # 更新日期 updatedAt # 内容 content # 阅读次数 viewTimes # 评论数 comment
   const { title, category, tags, content, createdAt, id, description, } = await request.body().value;
   if ((!id && title && category && tags && content && description) || (id && title && category && tags && content && description && createdAt)) {
+    const nowTime = new Date().toISOString();
     const result = !id ? (
         await queryResult(query.Create(query.Collection("blog"), {
           data: {
             title, category, description ,content, tags,
-            createdAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
-            updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' }),
+            createdAt: query.ToTime(nowTime),
+            updatedAt: query.ToTime(nowTime),
           }
         }
         ))
@@ -18,8 +19,7 @@ const createBlogController = async ({ request, response }: RouterContext<string>
         await queryResult(query.Update(query.Ref(query.Collection("blog"), id), {
           data: {
             title, category, content, tags, description,
-            createdAt,
-            updatedAt: new Date().toLocaleString('zh', { timeZone: 'Asia/Shanghai' })
+            updatedAt: query.ToTime(nowTime)
           }
         })
       )
@@ -34,7 +34,7 @@ const createBlogController = async ({ request, response }: RouterContext<string>
   }
 };
 
-const blogListController = async ({ state, response }: RouterContext<string>) => {
+const blogListController = async ({ response }: RouterContext<string>) => {
   const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("blog_list"))),
@@ -45,7 +45,14 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
           },
           query.Merge( 
             { id: query.Select(["ref", "id"], query.Var("shipDoc")) },
-            query.Select(['data'], query.Var('shipDoc'))
+            [
+              query.Select(['data'], query.Var('shipDoc')),
+              {
+                // 需要对时间进行转换
+                createdAt: query.Format('%t', query.Select(['data', 'createdAt'], query.Var('shipDoc'))),
+                updatedAt: query.Format('%t', query.Select(['data', 'updatedAt'], query.Var('shipDoc'))),
+              },
+            ]
           )
         )
       )
@@ -55,7 +62,7 @@ const blogListController = async ({ state, response }: RouterContext<string>) =>
   response.body = result;
 };
 
-const detailContentController = async ({ state, request, response }: RouterContext<string>) => {
+const detailContentController = async ({ request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request })
   const articleId = queryData.id;
   const result = await queryResult(
