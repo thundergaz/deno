@@ -7,7 +7,7 @@ if (!token) {
   throw new Error("environment variable FAUNA_SECRET not set");
 }
 
-var client = new Client.Client({
+const client = new Client.Client({
   secret: token,
   // Adjust the endpoint if you are using Region Groups
   endpoint: "https://db.fauna.com/",
@@ -133,16 +133,49 @@ const initList = [
     })
   },
 ];
-function initDatabase() {
+async function initDatabase() {
+  console.log('检查数据库完整性。');
   initList.forEach(
     async item => {
       const res = await client.query(query.If(query.Exists(query[item.type](item.name)), `${item.type} ${item.name} is ready.`, query.Do(item.action(), `${item.type} ${item.name} create success.`)));
       console.log(res);
     }
   )
+  console.log('检查完毕。');
+  // 其它处理
+  // const res: { data: any[] } = await client.query(
+  //   query.Map(
+  //     query.Paginate(query.Match(query.Index("prize_list"), 'mxyz')),
+  //     query.Lambda(
+  //       ["ts", "ref"],
+  //       {
+  //         id: query.Select(["ref", 'id'], query.Get(query.Var("ref"))),
+  //         time: query.Select(["data", 'createdAt'], query.Get(query.Var("ref")))
+  //       }
+  //       // Get(Var("ref"))
+  //       // Update(Var("ref"), {
+  //       //   data: {
+  //       //     date: ToTime(Select(["data", "date"], Get(Var("ref"))))
+  //       //   }
+  //       // })
+  //     )
+  //   )
+  // );
+  // res.data.forEach( async item => {
+  // const toTime = new Date(item.time).toISOString();
+  // const re = await client.query(
+  //     query.Update(query.Ref(query.Collection("prize"), item.id), {
+  //         data: {
+  //           // 这里的字段一定要注意，如果不是原有字段，新加的字段就不好删除
+  //           createdAt: query.ToTime(toTime)
+  //         }
+  //     })
+  //   )
+  //   console.log(toTime, re);
+  // })
 }
 initDatabase();
-const queryResult = async (...cb) => {
+const queryResult = async (...cb: (query.Expr|query.Expr[])[]) => {
   return await client
     .query(
       query.Do(

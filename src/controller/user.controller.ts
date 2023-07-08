@@ -1,7 +1,6 @@
 import { RouterContext, helpers } from "../deps.ts";
 import { users } from "./auth.controller.ts";
 import { queryResult, query } from "../database/db.ts";
-import { updateUserScore } from "./tools.ts"
 
 // 获取当前用户
 const getMeController = ({ state, response }: RouterContext<string>) => {
@@ -23,7 +22,7 @@ const getMeController = ({ state, response }: RouterContext<string>) => {
   }
 };
 // 获取用户信息
-const getUserController = async ({ state, request, response }: RouterContext<string>) => {
+const getUserController = async ({ request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
   const userName = queryData.name;
   const result = await queryResult(
@@ -43,7 +42,7 @@ const getUserController = async ({ state, request, response }: RouterContext<str
   response.body = result;
 };
 // 获取用户列表
-const userListController = async ({ state, response }: RouterContext<string>) => {
+const userListController = async ({ response }: RouterContext<string>) => {
   const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("allUsers"))),

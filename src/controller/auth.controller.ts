@@ -84,10 +84,9 @@ const signUpUserController = async ({
 const loginUserController = async ({
   request,
   response,
-  cookies,
 }: RouterContext<string>) => {
   try {
-    const { name, password }: { name: string; password: string } =
+    const { name }: { name: string; password: string } =
       await request.body().value;
 
     const user = users.find((user) => user.name === name);
@@ -132,10 +131,9 @@ const loginUserController = async ({
 const refreshAccessTokenController = async ({
   request,
   response,
-  cookies,
 }: RouterContext<string>) => {
   try {
-    const authorization = await request.headers.get("Authorization");
+    const authorization = await request.headers.get("Authorization")!;
 
     const message = "Could not refresh access token";
     const refresh_token = authorization.split(" ")[1];
