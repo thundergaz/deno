@@ -74,8 +74,8 @@ const detailContentController = async ({ request, response }: RouterContext<stri
           query.Select(['data'], query.Var('doc')),
           {
             // 需要对时间进行转换
-            createdAt: query.Format('%t', query.Select(['data', 'createdAt'], query.Var('shipDoc'))),
-            updatedAt: query.Format('%t', query.Select(['data', 'updatedAt'], query.Var('shipDoc'))),
+            createdAt: query.Format('%t', query.Select(['data', 'createdAt'], query.Var('doc'))),
+            updatedAt: query.Format('%t', query.Select(['data', 'updatedAt'], query.Var('doc'))),
           },
         ]
       )
