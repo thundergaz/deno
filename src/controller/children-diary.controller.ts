@@ -41,9 +41,7 @@ const createController = async ({ request, response }: RouterContext<string>) =>
 
 const ListController = async ({ request, state, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
-  console.log(queryData, 'userName');
   const userName = queryData.userName;
-  console.log(userName, 'userName');
   const result = await queryResult(
     query.Map(
       query.Paginate(query.Match(query.Index("children_diary_by_name"), userName)),
