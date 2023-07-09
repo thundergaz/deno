@@ -14,6 +14,27 @@ const client = new Client.Client({
 });
 // 查看初始化的配置是否完整，没有就需要重新创建
 const initList = [
+  // 孩子的日记
+  {
+    type: 'Collection',
+    name: 'ChildrenDiary',
+    action: () => query.CreateCollection({ name: "ChildrenDiary" })
+  },
+  {
+    type: 'Index',
+    name: 'children_diary_by_name',
+    action: () => query.CreateIndex({
+      name: "children_diary_by_name",
+      source: query.Collection("ChildrenDiary"),
+      terms: [
+        { field: ["data", "userName"] }
+      ],
+      values: [
+        { field: ["data", "date"], reverse: true },
+        { field: ["ref"] }
+      ]
+    })
+  },
   // 用户表
   {
     type: 'Collection',
@@ -145,14 +166,14 @@ async function initDatabase() {
   // 其它处理
   // const res: { data: any[] } = await client.query(
   //   query.Map(
-  //     query.Paginate(query.Match(query.Index("prize_list"), 'mxyz')),
+  //     query.Paginate(query.Match(query.Index("rbyt_all_score"))),
   //     query.Lambda(
-  //       ["ts", "ref"],
+  //       ["ts","ref"],
   //       {
   //         id: query.Select(["ref", 'id'], query.Get(query.Var("ref"))),
-  //         time: query.Select(["data", 'createdAt'], query.Get(query.Var("ref")))
+  //         data: query.Select(["data"], query.Get(query.Var("ref")))
   //       }
-  //       // Get(Var("ref"))
+  //       // query.Var("ref")
   //       // Update(Var("ref"), {
   //       //   data: {
   //       //     date: ToTime(Select(["data", "date"], Get(Var("ref"))))
@@ -161,17 +182,23 @@ async function initDatabase() {
   //     )
   //   )
   // );
+
+  // console.log(res.data.map( x => {
+  //   x.data = {
+  //     description: x.data.item.map( (y: any) => y.content).join(';'),
+  //     title: x.data.item[0].content,
+  //     date: x.data.date,
+  //   };
+  //   return x;
+  // }));
   // res.data.forEach( async item => {
-  // const toTime = new Date(item.time).toISOString();
-  // const re = await client.query(
-  //     query.Update(query.Ref(query.Collection("prize"), item.id), {
-  //         data: {
-  //           // 这里的字段一定要注意，如果不是原有字段，新加的字段就不好删除
-  //           createdAt: query.ToTime(toTime)
-  //         }
+  //   const target = { ...item.data, userName: 'rbyt' };
+  //   const re = await client.query(
+  //     query.Create(query.Collection("ChildrenDiary"), {
+  //         data: target
   //     })
   //   )
-  //   console.log(toTime, re);
+  //   console.log('..', re);
   // })
 }
 initDatabase();

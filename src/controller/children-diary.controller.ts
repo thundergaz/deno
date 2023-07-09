@@ -2,28 +2,29 @@ import { RouterContext, helpers } from "../deps.ts";
 import { queryResult, query } from "../database/db.ts";
 import { addScoreLog } from "./tools.ts"
 
-const addScoreController = async ({ request, response }: RouterContext<string>) => {
-  const { date, title, description, id } = await request.body().value;
+const createController = async ({ request, response }: RouterContext<string>) => {
+  const { date, title, description, id, userName } = await request.body().value;
   const type = 'task';
   const scoreDescription = `完成了今日记录任务，增加5分。`;
   // 这里的时间必须是标准时间，以防万一，进行标准化。
   const nowTime = new Date(date).toISOString();
   // 查看增加内容如果有加分，就添加日志，更新的时候有一些为难。
   const result = !id ? await queryResult(
-    query.Create(query.Collection("mxyz"), {
+    query.Create(query.Collection("ChildrenDiary"), {
       data: {
         // 标题
         title,
         // 描述
         description,
         // 加分的时间
-        date: query.ToTime(nowTime)
+        date: query.ToTime(nowTime),
+        userName
       }
     }
     ),
-    addScoreLog(date, 'mxyz', 5, scoreDescription, type)
+    addScoreLog(date, userName, 5, scoreDescription, type)
   ) : await queryResult(
-    query.Update(query.Ref(query.Collection("mxyz"), id), {
+    query.Update(query.Ref(query.Collection("ChildrenDiary"), id), {
       data: {
         // 描述
         description,
@@ -38,10 +39,14 @@ const addScoreController = async ({ request, response }: RouterContext<string>) 
   response.body = result;
 };
 
-const scoreListController = async ({ state, response }: RouterContext<string>) => {
+const ListController = async ({ request, state, response }: RouterContext<string>) => {
+  const queryData = helpers.getQuery({ request });
+  console.log(queryData, 'userName');
+  const userName = queryData.userName;
+  console.log(userName, 'userName');
   const result = await queryResult(
     query.Map(
-      query.Paginate(query.Match(query.Index("mxyz_all_score"))),
+      query.Paginate(query.Match(query.Index("children_diary_by_name"), userName)),
       query.Lambda(['time', 'scoreRef'],
         query.Let(
           {
@@ -63,14 +68,15 @@ const scoreListController = async ({ state, response }: RouterContext<string>) =
   response.body = result;
 };
 // 查找某天的内容，用于更新
-const getContentController = async ({ request, response }: RouterContext<string>) => {
+const detailController = async ({ request, response }: RouterContext<string>) => {
   const queryData = helpers.getQuery({ request });
+  const userName = queryData.userName;
   // 这里的时间必须是标准时间，以防万一，进行标准化。
   const searchDate = new Date(queryData.date).toISOString();
   const result = await queryResult(
     query.Map(
       query.Filter(
-        query.Paginate(query.Match(query.Index("mxyz_all_score"))),
+        query.Paginate(query.Match(query.Index("children_diary_by_name"), userName)),
         query.Lambda(
           ['time', 'planetRef'],
           query.Equals(query.TimeDiff(query.Select(["data", "date"], query.Get(query.Var("planetRef"))), query.ToTime(searchDate), 'days'),0)
@@ -93,4 +99,4 @@ const getContentController = async ({ request, response }: RouterContext<string>
   response.body = result;
 };
 
-export default { addScoreController, scoreListController, getContentController };
+export default { createController, detailController, ListController };
