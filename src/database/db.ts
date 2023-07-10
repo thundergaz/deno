@@ -117,42 +117,6 @@ const initList = [
       ]
     })
   },
-  {
-    type: 'Collection',
-    name: 'mxyz',
-    action: () => query.CreateCollection({ name: "mxyz" })
-  },
-  // 创建rbyt的索引
-  {
-    type: 'Index',
-    name: 'mxyz_all_score',
-    action: () => query.CreateIndex({
-      name: "mxyz_all_score",
-      source: query.Collection("mxyz"),
-      values: [
-        { field: ["data", "date"], reverse: true },
-        { field: ["ref"] }
-      ]
-    })
-  },
-  {
-    type: 'Collection',
-    name: 'rbyt',
-    action: () => query.CreateCollection({ name: "rbyt" })
-  },
-  // 创建rbyt的索引
-  {
-    type: 'Index',
-    name: 'rbyt_all_score',
-    action: () => query.CreateIndex({
-      name: "rbyt_all_score",
-      source: query.Collection("rbyt"),
-      values: [
-        { field: ["data", "date"], reverse: true },
-        { field: ["ref"] }
-      ]
-    })
-  },
 ];
 async function initDatabase() {
   console.log('检查数据库完整性。');
