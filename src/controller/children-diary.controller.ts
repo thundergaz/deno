@@ -3,7 +3,7 @@ import { queryResult, query } from "../database/db.ts";
 import { addScoreLog } from "./tools.ts"
 
 const createController = async ({ request, response }: RouterContext<string>) => {
-  const { date, title, description, id, userName } = await request.body().value;
+  const { date, title, description, weather, temperate, id, userName } = await request.body().value;
   const type = 'task';
   const scoreDescription = `完成了今日记录任务，增加5分。`;
   // 这里的时间必须是标准时间，以防万一，进行标准化。
@@ -12,6 +12,10 @@ const createController = async ({ request, response }: RouterContext<string>) =>
   const result = !id ? await queryResult(
     query.Create(query.Collection("ChildrenDiary"), {
       data: {
+        // 天气
+        weather,
+        // 温度
+        temperate,
         // 标题
         title,
         // 描述
@@ -26,6 +30,10 @@ const createController = async ({ request, response }: RouterContext<string>) =>
   ) : await queryResult(
     query.Update(query.Ref(query.Collection("ChildrenDiary"), id), {
       data: {
+        // 天气
+        weather,
+        // 温度
+        temperate,
         // 描述
         description,
         // 标题
@@ -55,6 +63,8 @@ const ListController = async ({ request, state, response }: RouterContext<string
               id: query.Select(["ref", "id"], query.Var("shipDoc")),
               title: query.Select(["data", "title"], query.Var("shipDoc")),
               date: query.Format('%t',query.Select(["data", "date"], query.Var("shipDoc"))),
+              weather: query.Select(["data", "weather"], query.Var("shipDoc"), ''),
+              temperate: query.Select(["data", "temperate"], query.Var("shipDoc"), ''),
             },
             query.If(!!state.user_id, { description: query.Select(["data", "description"], query.Var("shipDoc"), '')}, {})
           )
@@ -87,8 +97,10 @@ const detailController = async ({ request, response }: RouterContext<string>) =>
         {
           id: query.Select(["ref", "id"], query.Var("shipDoc")),
           title: query.Select(["data", "title"], query.Var("shipDoc")),
-          item: query.Select(["data", "item"], query.Var("shipDoc")),
+          description: query.Select(["data", "description"], query.Var("shipDoc")),
           date: query.Format('%t',query.Select(["data", "date"], query.Var("shipDoc"))),
+          weather: query.Select(["data", "weather"], query.Var("shipDoc"), ''),
+          temperate: query.Select(["data", "temperate"], query.Var("shipDoc"), ''),
         }
       ))
     )
