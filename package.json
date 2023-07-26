@@ -1,0 +1,12 @@
+{
+  "name": "deno",
+  "version": "1.0.0",
+  "description": "```     const BOOK_ROUTE = new URLPattern({ pathname: \"/books/:id\" });",
+  "scripts": {
+  },
+  "dependencies": {
+    "qiniu": "7.8.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
