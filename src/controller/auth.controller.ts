@@ -1,7 +1,5 @@
 import { RouterContext } from "../deps.ts";
 import { signJwt, verifyJwt } from "../utils/jwt.ts";
-import * as qiniu from 'qiniu';
-// coffeescript
 
 export type IUser = {
   id?: string;
@@ -36,29 +34,6 @@ export const users: IUser[] = [
 ];
 const ACCESS_TOKEN_EXPIRES_IN = 60 * 24;
 const REFRESH_TOKEN_EXPIRES_IN = 60 * 24 * 30;
-
-const getUploadToken = async ({
-  request,
-  response,
-}: RouterContext<string>) => {
-  const {
-    bucket
-  }: { bucket: string } = await request.body().value;
-  const accessKey = 'U0UjfgXX3e7EcovkR8-FTqjQZ9U7Anm21Pz-JA-s';
-  const secretKey = 'CdIOBGiZfBeVJmzxZys6_EgorcbyRxGuGYuDFy2K';
-  const mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
-  const options = {
-    scope: bucket,
-  };
-  const putPolicy = new qiniu.rs.PutPolicy(options);
-  const uploadToken = putPolicy.uploadToken(mac);
-
-  response.status = 201;
-  response.body = {
-    status: "success",
-    uploadToken,
-  };
-}
 
 const signUpUserController = async ({
   request,
@@ -225,6 +200,5 @@ export default {
   signUpUserController,
   loginUserController,
   logoutController,
-  refreshAccessTokenController,
-  getUploadToken
+  refreshAccessTokenController
 };
